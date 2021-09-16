@@ -6,8 +6,8 @@
   },
   "scripts": {
     "_install": "cd src/addons/test-cpp && npm install && cd ../../frontend && npm install && cd ../../ && npm install",
-    "build:addon:test-cpp": "cd src/addons/test-cpp && cmake-js && cd ../../../",
-    "start:frontend": "npm run build:addon:test-cpp && cd src/frontend && npm start && cd ../../",
+    "build:addon:test-cpp": "cd src/addons/test-cpp && npm run build && cd ../../../",
+    "start:frontend": "cd src/frontend && npm start",
     "start": "electron ."
   }
 }

@@ -1,5 +1,6 @@
 const path = require('path');
 const child_process = require('child_process');
+const readline = require('readline');
 const chokidar = require('chokidar');
 
 const
@@ -45,70 +46,122 @@ const createWindow = () =>
 	window.loadURL('http://localhost:8080');
 };
 
+if (process.platform === 'win32')
+{
+	const rl =
+		readline
+			.createInterface
+			(
+				{
+					input: process.stdin,
+					output: process.stdout
+				},
+			);
+
+	rl.on
+	(
+		'SIGINT',
+
+		() =>
+		{
+			process.emit('SIGINT');
+		},
+	);
+}
+
+const killNode = () =>
+{
+	console.log('KILL NODE');
+	// Killing all node processes on linux and windows
+	// Find a better cross-OS way to kill frontend process ?
+	switch (process.platform)
+	{
+	case 'linux':
+
+		child_process.execSync('killall -9 node');
+
+		break;
+
+	case 'win32':
+
+		child_process.execSync('taskkill /F /IM node.exe /T');
+
+		break;
+
+	default:
+	}
+};
+
 app
 	.whenReady()
 	.then
 	(
 		() =>
 		{
-			createWindow();
+			console.log('test-cpp BUILD STDOUT:');
+			console.log
+			(
+				child_process
+					.execSync
+					(`cd ${ __dirname } && npm run build:addon:test-cpp`, { encoding: 'utf8' }),
+			);
 
 			const frontend_process =
 				child_process
 					.spawn
 					(`cd ${ __dirname } && npm run start:frontend`, { shell: true });
 
-			process.on
-			(
-				'exit',
-
-				() =>
-				{
-					// Killing all node processes on linux.
-					// Find a better cross-OS way to kill frontend process.
-					child_process.execSync('killall -9 node');
-				},
-			);
+			process.on('exit', killNode);
+			process.on('SIGINT', killNode);
 
 			frontend_process.stdout.on
 			(
 				'data',
 
-				() =>
+				(_data) =>
 				{
+					console.log('FRONTEND PROCESS STDOUT:');
+					console.log(`${ _data }`);
+
 					window.reload();
 				},
 			);
 
-			// Watch non-frontend modules.
-			// Frontend is watched by webpack.
-			chokidar
-				.watch
-				(
-					[
-						PATH_ADDONS_NODE_API_TEST_SRC,
-					],
-				)
-				.on
-				(
-					'change',
+			createWindow();
 
-					(evt) =>
-					{
-						if (evt.includes(PATH_ADDONS_NODE_API_TEST_SRC))
+			if (process.platform === 'win32')
+			{
+				// Watch non-frontend modules.
+				// Frontend is watched by webpack.
+				chokidar
+					.watch
+					(
+						[
+							PATH_ADDONS_NODE_API_TEST_SRC,
+						],
+					)
+					.on
+					(
+						'change',
+
+						(evt) =>
 						{
-							console.log
-							(
-								child_process
-									.execSync
-									(`cd ${ __dirname } && npm run build:addon:test-cpp`, { encoding: 'utf8' }),
-							);
+							if (evt.includes(PATH_ADDONS_NODE_API_TEST_SRC))
+							{
+								// console.log('test-cpp BUILD STDOUT:');
+								// console.log
+								// (
+								// 	child_process
+								// 		.execSync
+								// 		(`cd ${ __dirname } && npm run build:addon:test-cpp`, { encoding: 'utf8' }),
+								// );
 
-							window.close();
+								window.close();
 
-							createWindow();
-						}
-					},
-				);
+								createWindow();
+							}
+						},
+					);
+			}
 		},
 	);
