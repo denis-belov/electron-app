@@ -48,7 +48,7 @@ const createWindow = () =>
 
 if (process.platform === 'win32')
 {
-	const rl =
+  const rl =
 		readline
 			.createInterface
 			(
@@ -58,7 +58,7 @@ if (process.platform === 'win32')
 				},
 			);
 
-	rl.on
+  rl.on
 	(
 		'SIGINT',
 
@@ -112,7 +112,11 @@ app
 					(`cd ${ __dirname } && npm run start:frontend`, { shell: true });
 
 			process.on('exit', killNode);
-			process.on('SIGINT', killNode);
+
+			if (process.platform === 'win32')
+			{
+				process.on('SIGINT', killNode);
+			}
 
 			frontend_process.stdout.on
 			(
@@ -129,7 +133,7 @@ app
 
 			createWindow();
 
-			if (process.platform === 'win32')
+			if (process.platform === 'linux')
 			{
 				// Watch non-frontend modules.
 				// Frontend is watched by webpack.
@@ -148,13 +152,13 @@ app
 						{
 							if (evt.includes(PATH_ADDONS_NODE_API_TEST_SRC))
 							{
-								// console.log('test-cpp BUILD STDOUT:');
-								// console.log
-								// (
-								// 	child_process
-								// 		.execSync
-								// 		(`cd ${ __dirname } && npm run build:addon:test-cpp`, { encoding: 'utf8' }),
-								// );
+								console.log('test-cpp BUILD STDOUT:');
+								console.log
+								(
+									child_process
+										.execSync
+										(`cd ${ __dirname } && npm run build:addon:test-cpp`, { encoding: 'utf8' }),
+								);
 
 								window.close();
 
