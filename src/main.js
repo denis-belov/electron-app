@@ -38,134 +38,149 @@ const createWindow = () =>
 		},
 	);
 
-	// window.setFullScreen(true);
-	window.toggleDevTools();
+	window.setFullScreen(true);
 
-	// window.loadFile(path.join(__dirname, 'frontend/build/index.html'));
-
-	window.loadURL('http://localhost:8080');
-};
-
-if (process.platform === 'win32')
-{
-  const rl =
-		readline
-			.createInterface
-			(
-				{
-					input: process.stdin,
-					output: process.stdout
-				},
-			);
-
-  rl.on
-	(
-		'SIGINT',
-
-		() =>
-		{
-			process.emit('SIGINT');
-		},
-	);
-}
-
-const killNode = () =>
-{
-	console.log('KILL NODE');
-	// Killing all node processes on linux and windows
-	// Find a better cross-OS way to kill frontend process ?
-	switch (process.platform)
+	if (process.env.__ELECTRON_LOCAL__)
 	{
-	case 'linux':
+		window.toggleDevTools();
 
-		child_process.execSync('killall -9 node');
-
-		break;
-
-	case 'win32':
-
-		child_process.execSync('taskkill /F /IM node.exe /T');
-
-		break;
-
-	default:
+		window.loadURL('http://localhost:8080');
+	}
+	else
+	{
+		window.loadFile(path.join(__dirname, 'frontend/build/index.html'));
 	}
 };
 
-app
-	.whenReady()
-	.then
-	(
-		() =>
+if (process.env.__ELECTRON_LOCAL__)
+{
+	if (process.platform === 'win32')
+	{
+		const rl =
+			readline
+				.createInterface
+				(
+					{
+						input: process.stdin,
+						output: process.stdout
+					},
+				);
+
+		rl.on
+		(
+			'SIGINT',
+
+			() =>
+			{
+				process.emit('SIGINT');
+			},
+		);
+	}
+
+	const killNode = () =>
+	{
+		console.log('KILL NODE');
+		// Killing all node processes on linux and windows
+		// Find a better cross-OS way to kill frontend process ?
+		switch (process.platform)
 		{
-			console.log('test-cpp BUILD STDOUT:');
-			console.log
-			(
-				child_process
-					.execSync
-					(`cd ${ __dirname } && npm run build:addon:test-cpp`, { encoding: 'utf8' }),
-			);
+		case 'linux':
 
-			const frontend_process =
-				child_process
-					.spawn
-					(`cd ${ __dirname } && npm run start:frontend`, { shell: true });
+			child_process.execSync('killall -9 node');
 
-			process.on('exit', killNode);
+			break;
 
-			if (process.platform === 'win32')
+		case 'win32':
+
+			child_process.execSync('taskkill /F /IM node.exe /T');
+
+			break;
+
+		default:
+		}
+	};
+
+	app
+		.whenReady()
+		.then
+		(
+			() =>
 			{
-				process.on('SIGINT', killNode);
-			}
+				console.log('test-cpp BUILD STDOUT:');
+				console.log
+				(
+					child_process
+						.execSync
+						(`cd ${ __dirname } && npm run build:addon:test-cpp`, { encoding: 'utf8' }),
+				);
 
-			frontend_process.stdout.on
-			(
-				'data',
+				const frontend_process =
+					child_process
+						.spawn
+						(`cd ${ __dirname } && npm run start:frontend`, { shell: true });
 
-				(_data) =>
+				process.on('exit', killNode);
+
+				if (process.platform === 'win32')
 				{
-					console.log('FRONTEND PROCESS STDOUT:');
-					console.log(`${ _data }`);
+					process.on('SIGINT', killNode);
+				}
 
-					window.reload();
-				},
-			);
+				frontend_process.stdout.on
+				(
+					'data',
 
-			createWindow();
+					(_data) =>
+					{
+						console.log('FRONTEND PROCESS STDOUT:');
+						console.log(`${ _data }`);
 
-			if (process.platform === 'linux')
-			{
-				// Watch non-frontend modules.
-				// Frontend is watched by webpack.
-				chokidar
-					.watch
-					(
-						[
-							PATH_ADDONS_NODE_API_TEST_SRC,
-						],
-					)
-					.on
-					(
-						'change',
+						window.reload();
+					},
+				);
 
-						(evt) =>
-						{
-							if (evt.includes(PATH_ADDONS_NODE_API_TEST_SRC))
+				createWindow();
+
+				if (process.platform === 'linux')
+				{
+					// Watch non-frontend modules.
+					// Frontend is watched by webpack.
+					chokidar
+						.watch
+						(
+							[
+								PATH_ADDONS_NODE_API_TEST_SRC,
+							],
+						)
+						.on
+						(
+							'change',
+
+							(evt) =>
 							{
-								console.log('test-cpp BUILD STDOUT:');
-								console.log
-								(
-									child_process
-										.execSync
-										(`cd ${ __dirname } && npm run build:addon:test-cpp`, { encoding: 'utf8' }),
-								);
+								if (evt.includes(PATH_ADDONS_NODE_API_TEST_SRC))
+								{
+									console.log('test-cpp BUILD STDOUT:');
+									console.log
+									(
+										child_process
+											.execSync
+											(`cd ${ __dirname } && npm run build:addon:test-cpp`, { encoding: 'utf8' }),
+									);
 
-								window.close();
+									window.close();
 
-								createWindow();
-							}
-						},
-					);
-			}
-		},
-	);
+									createWindow();
+								}
+							},
+						);
+				}
+			},
+		);
+}
+else
+{
+	app
+		.whenReady()
+		.then(createWindow);
+}
