@@ -13,6 +13,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_JS_INC} "${CMAKE_SOUR
 
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} /home/denis/reps/denis-belov/xgk-test/build/gcc-x64/output/a/xgk-test.a)
 
-add_custom_target(xgk-test WORKING_DIRECTORY /home/denis/reps/denis-belov/xgk-test/src COMMAND cd /home/denis/reps/denis-belov/xgk-test && ./CMD-MAKE-GCC-X64.sh)
+add_custom_target(xgk-test WORKING_DIRECTORY /home/denis/reps/denis-belov/xgk-test/src COMMAND cd /home/denis/reps/denis-belov/xgk-test && genmake gcc-x64)
+add_custom_target(xgk-math WORKING_DIRECTORY /home/denis/reps/denis-belov/xgk-math/src COMMAND cd /home/denis/reps/denis-belov/xgk-test && genmake gcc-x64)
+add_custom_target(xgk-aux WORKING_DIRECTORY /home/denis/reps/denis-belov/xgk-aux/src COMMAND cd /home/denis/reps/denis-belov/xgk-test && genmake gcc-x64)
 
 add_dependencies(${PROJECT_NAME} xgk-test)
+add_dependencies(${PROJECT_NAME} xgk-math)
+add_dependencies(${PROJECT_NAME} xgk-aux)

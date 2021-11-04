@@ -1,11 +1,13 @@
 #define EXPORT_FUNCTION(function_name) exports[#function_name] = Function::New<Callback>(env, function_name);
 #define EXPORT_FUNCTION_VOID(function_name) exports[#function_name] = Function::New<VoidCallback>(env, function_name);
+#define EXPORT_OBJECT(name) exports[#name] = name;
 
 
 
 // #include <iostream>
 #include <cstring>
 #include <thread>
+// #include <vector>
 
 #include "napi.h"
 
@@ -18,9 +20,9 @@ using namespace Napi;
 
 
 void initOrbit (void);
-void initGL2 (void);
+void initGL2 (const size_t&, const size_t&);
 void loop_function_GL2 (void);
-void tran (const float&, const float&);
+void rotateOrbit (const float&, const float&);
 
 
 
@@ -28,15 +30,13 @@ extern void* pixel_data;
 
 size_t rendering_loop_flag { 1 };
 
-uint32_t qweqwe [800 * 600];
+size_t window_xy [2];
 
 
 
 void rendernig_thread (void)
 {
-	initOrbit();
-
-	initGL2();
+	initGL2(window_xy[0], window_xy[1]);
 
 	rendering_loop_flag = 1;
 
@@ -55,6 +55,11 @@ Value testRenderingThread (const CallbackInfo& info)
 
 void runRenderingThread (const CallbackInfo& info)
 {
+	initOrbit();
+
+	window_xy[0] = info[0].As<Number>().Uint32Value();
+	window_xy[1] = info[1].As<Number>().Uint32Value();
+
 	rendernig_thread_handle = new std::thread { rendernig_thread };
 }
 
@@ -65,17 +70,12 @@ void stopRenderingThread (const CallbackInfo& info)
 	delete rendernig_thread_handle;
 }
 
-void _tran (const CallbackInfo& info)
-{
-	tran(info[0].As<Number>(), info[1].As<Number>());
-}
-
-Value testPixelData (const CallbackInfo& info)
+Value getPixelDataStorageIsAllocated (const CallbackInfo& info)
 {
 	return Boolean::New(info.Env(), pixel_data != nullptr);
 }
 
-Value getPixelData (const CallbackInfo& info)
+Value getPixelDataStorage (const CallbackInfo& info)
 {
 	ArrayBuffer arraybuffer
 	{
@@ -87,12 +87,7 @@ Value getPixelData (const CallbackInfo& info)
 		),
 	};
 
-	// static Reference<ArrayBuffer> arraybuffer_ref =
-	// 	Weak<ArrayBuffer>(arraybuffer);
-
-	// arraybuffer_ref.SuppressDestruct();
-
-	TypedArrayOf<uint8_t> typedarray
+	TypedArrayOf<uint8_t> uint8_clamped_array
 	{
 		TypedArrayOf<uint8_t>::New
 		(
@@ -104,12 +99,12 @@ Value getPixelData (const CallbackInfo& info)
 		),
 	};
 
-	// static Reference<TypedArrayOf<uint8_t>> typedarray_ref =
-	// 	Weak<TypedArrayOf<uint8_t>>(typedarray);
+	return uint8_clamped_array;
+}
 
-	// typedarray_ref.SuppressDestruct();
-
-	return typedarray;
+void rotateOrbitJs (const CallbackInfo& info)
+{
+	rotateOrbit(info[0].As<Number>(), info[1].As<Number>());
 }
 
 Object Init (Env env, Object exports)
@@ -120,9 +115,9 @@ Object Init (Env env, Object exports)
 	EXPORT_FUNCTION(testRenderingThread);
 	EXPORT_FUNCTION_VOID(runRenderingThread);
 	EXPORT_FUNCTION_VOID(stopRenderingThread);
-	EXPORT_FUNCTION_VOID(_tran);
-	EXPORT_FUNCTION(testPixelData);
-	EXPORT_FUNCTION(getPixelData);
+	EXPORT_FUNCTION(getPixelDataStorageIsAllocated);
+	EXPORT_FUNCTION(getPixelDataStorage);
+	EXPORT_FUNCTION_VOID(rotateOrbitJs);
 
 	return exports;
 }

@@ -1,3 +1,11 @@
+/*
+eslint-disable
+
+no-process-env,
+*/
+
+
+
 const path = require('path');
 const child_process = require('child_process');
 const readline = require('readline');
@@ -13,6 +21,7 @@ const
 
 
 const PATH_ADDONS_NODE_API_TEST_SRC = path.join(__dirname, 'addons/test-cpp/src');
+const XGK_TEST_SRC = path.join(__dirname, '../../xgk-test/src');
 
 
 
@@ -34,12 +43,15 @@ const createWindow = () =>
 
 				// Unify nodejs and chromium memory spaces.
 				contextIsolation: false,
+				webSecurity: false,
 			},
 		},
 	);
 
 	window.setFullScreen(true);
 
+	// Run frontend as regular web app
+	// deployed on localhost with webpack-dev-server
 	if (process.env.__ELECTRON_LOCAL__)
 	{
 		window.toggleDevTools();
@@ -100,25 +112,37 @@ if (process.env.__ELECTRON_LOCAL__)
 		}
 	};
 
+	const buildAddonTestCpp = async () =>
+	{
+		await new Promise
+		(
+			(resolve) =>
+			{
+				console.log('test-cpp PROCESS STDOUT:');
+
+				const testcpp_process =
+					child_process
+						.spawn
+						(`cd ${ __dirname } && npm run build:addon:test-cpp`, { shell: true });
+
+				testcpp_process.stdout.on
+				(
+					'data',
+
+					(_data) => console.log(`${ _data }`),
+				);
+
+				testcpp_process.on('close', resolve);
+			},
+		);
+	};
+
 	app
 		.whenReady()
 		.then
 		(
-			() =>
+			async () =>
 			{
-				console.log('test-cpp BUILD STDOUT:');
-				console.log
-				(
-					child_process
-						.execSync
-						(`cd ${ __dirname } && npm run build:addon:test-cpp`, { encoding: 'utf8' }),
-				);
-
-				const frontend_process =
-					child_process
-						.spawn
-						(`cd ${ __dirname } && npm run start:frontend`, { shell: true });
-
 				process.on('exit', killNode);
 
 				if (process.platform === 'win32')
@@ -126,13 +150,21 @@ if (process.env.__ELECTRON_LOCAL__)
 					process.on('SIGINT', killNode);
 				}
 
+				await buildAddonTestCpp();
+
+				console.log('FRONTEND PROCESS STDOUT:');
+
+				const frontend_process =
+					child_process
+						.spawn
+						(`cd ${ __dirname } && npm run start:frontend`, { shell: true });
+
 				frontend_process.stdout.on
 				(
 					'data',
 
 					(_data) =>
 					{
-						console.log('FRONTEND PROCESS STDOUT:');
 						console.log(`${ _data }`);
 
 						window.reload();
@@ -149,6 +181,7 @@ if (process.env.__ELECTRON_LOCAL__)
 						.watch
 						(
 							[
+								XGK_TEST_SRC,
 								PATH_ADDONS_NODE_API_TEST_SRC,
 							],
 						)
@@ -156,22 +189,20 @@ if (process.env.__ELECTRON_LOCAL__)
 						(
 							'change',
 
-							(evt) =>
+							async (evt) =>
 							{
-								if (evt.includes(PATH_ADDONS_NODE_API_TEST_SRC))
-								{
-									console.log('test-cpp BUILD STDOUT:');
-									console.log
-									(
-										child_process
-											.execSync
-											(`cd ${ __dirname } && npm run build:addon:test-cpp`, { encoding: 'utf8' }),
-									);
+								// if
+								// (
+								// 	evt.includes(XGK_TEST_SRC) ||
+								// 	evt.includes(PATH_ADDONS_NODE_API_TEST_SRC)
+								// )
+								// {
+								await buildAddonTestCpp();
 
-									window.close();
+								window.close();
 
-									createWindow();
-								}
+								createWindow();
+								// }
 							},
 						);
 				}

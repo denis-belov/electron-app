@@ -3,34 +3,38 @@ import '@babel/polyfill';
 
 
 
+const WINDOW_WIDTH = 800;
+const WINDOW_HEIGHT = 800;
+
+
+
 const
 	{
 		testRenderingThread,
 		runRenderingThread,
-		testPixelData,
-		getPixelData,
-		_tran,
+		getPixelDataStorageIsAllocated,
+		getPixelDataStorage,
+		rotateOrbitJs,
 	}	= window.__CPP_MODULE__;
 
 
 
-const canvas = document.createElement('canvas');
-canvas.width = 800;
-canvas.height = 600;
-canvas.style.position = 'absolute';
+const [ canvas ] = document.getElementsByTagName('canvas');
+canvas.width = WINDOW_WIDTH;
+canvas.height = WINDOW_HEIGHT;
 canvas.style.width = '800px';
-canvas.style.height = '600px';
+canvas.style.height = '800px';
 
 
 
 const rotateOrbit = (evt) =>
 {
-	_tran(-evt.movementX * 0.01, -evt.movementY * 0.01);
+	rotateOrbitJs(-evt.movementX * 0.01, -evt.movementY * 0.01);
 };
 
 const stopOrbitRotation = () =>
 {
-	canvas.removeEventListener('mousemove', rotateOrbit);
+	window.removeEventListener('mousemove', rotateOrbit);
 	window.removeEventListener('mouseup', stopOrbitRotation);
 };
 
@@ -40,7 +44,7 @@ canvas.addEventListener
 
 	() =>
 	{
-		canvas.addEventListener('mousemove', rotateOrbit);
+		window.addEventListener('mousemove', rotateOrbit);
 		window.addEventListener('mouseup', stopOrbitRotation);
 	},
 );
@@ -51,9 +55,7 @@ window.addEventListener('mouseup', stopOrbitRotation);
 
 const canvas_context = canvas.getContext('2d');
 
-document.body.appendChild(canvas);
-
-const image_data = canvas_context.createImageData(800, 600);
+const image_data = canvas_context.createImageData(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 
 
@@ -63,9 +65,12 @@ window.addEventListener
 
 	async () =>
 	{
+		// Redundant? Does reloading of window cause killing of all processes and
+		// threads spawned from them, so rendering thread does never exist
+		// after reloading?
 		if (!testRenderingThread())
 		{
-			runRenderingThread();
+			runRenderingThread(WINDOW_WIDTH, WINDOW_HEIGHT);
 		}
 
 		let interval = null;
@@ -79,7 +84,7 @@ window.addEventListener
 					(
 						() =>
 						{
-							if (testPixelData())
+							if (getPixelDataStorageIsAllocated())
 							{
 								clearInterval(interval);
 
@@ -92,12 +97,11 @@ window.addEventListener
 			},
 		);
 
-		// const image_data = new ImageData(getPixelData(), 800, 600);
-		// image_data.data = getPixelData();
+		const pixel_data_storage = getPixelDataStorage();
 
 		const render = () =>
 		{
-			image_data.data.set(getPixelData());
+			image_data.data.set(pixel_data_storage);
 
 			canvas_context.putImageData(image_data, 0, 0);
 
