@@ -4,7 +4,7 @@ import '@babel/polyfill';
 
 
 const WINDOW_WIDTH = 800;
-const WINDOW_HEIGHT = 800;
+const WINDOW_HEIGHT = 600;
 
 
 
@@ -14,42 +14,46 @@ const
 		runRenderingThread,
 		getPixelDataStorageIsAllocated,
 		getPixelDataStorage,
-		rotateOrbitJs,
+		// rotateOrbitJs,
 	}	= window.__CPP_MODULE__;
+
+
+
+// LOG(__CPP_MODULE__)
 
 
 
 const [ canvas ] = document.getElementsByTagName('canvas');
 canvas.width = WINDOW_WIDTH;
 canvas.height = WINDOW_HEIGHT;
-canvas.style.width = '800px';
-canvas.style.height = '800px';
+canvas.style.width = `${ WINDOW_WIDTH }px`;
+canvas.style.height = `${ WINDOW_HEIGHT }px`;
 
 
 
-const rotateOrbit = (evt) =>
-{
-	rotateOrbitJs(-evt.movementX * 0.01, -evt.movementY * 0.01);
-};
+// const rotateOrbit = (evt) =>
+// {
+// 	rotateOrbitJs(-evt.movementX * 0.01, -evt.movementY * 0.01);
+// };
 
-const stopOrbitRotation = () =>
-{
-	window.removeEventListener('mousemove', rotateOrbit);
-	window.removeEventListener('mouseup', stopOrbitRotation);
-};
+// const stopOrbitRotation = () =>
+// {
+// 	window.removeEventListener('mousemove', rotateOrbit);
+// 	window.removeEventListener('mouseup', stopOrbitRotation);
+// };
 
-canvas.addEventListener
-(
-	'mousedown',
+// canvas.addEventListener
+// (
+// 	'mousedown',
 
-	() =>
-	{
-		window.addEventListener('mousemove', rotateOrbit);
-		window.addEventListener('mouseup', stopOrbitRotation);
-	},
-);
+// 	() =>
+// 	{
+// 		window.addEventListener('mousemove', rotateOrbit);
+// 		window.addEventListener('mouseup', stopOrbitRotation);
+// 	},
+// );
 
-window.addEventListener('mouseup', stopOrbitRotation);
+// window.addEventListener('mouseup', stopOrbitRotation);
 
 
 

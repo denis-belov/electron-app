@@ -20,8 +20,8 @@ const
 
 
 
-const PATH_ADDONS_NODE_API_TEST_SRC = path.join(__dirname, 'addons/test-cpp/src');
-const XGK_TEST_SRC = path.join(__dirname, '../../xgk-test/src');
+// const XGK_TEST_SRC = path.join(__dirname, '../../xgk-test/src');
+// const PATH_ADDONS_NODE_API_TEST_SRC = path.join(__dirname, 'addons/test-cpp/src');
 
 
 
@@ -74,7 +74,7 @@ if (process.env.__ELECTRON_LOCAL__)
 				(
 					{
 						input: process.stdin,
-						output: process.stdout
+						output: process.stdout,
 					},
 				);
 
@@ -132,6 +132,13 @@ if (process.env.__ELECTRON_LOCAL__)
 					(_data) => console.log(`${ _data }`),
 				);
 
+				testcpp_process.stderr.on
+				(
+					'data',
+
+					(_data) => console.log('\x1b[31m', `${ _data }`),
+				);
+
 				testcpp_process.on('close', resolve);
 			},
 		);
@@ -181,15 +188,22 @@ if (process.env.__ELECTRON_LOCAL__)
 						.watch
 						(
 							[
-								XGK_TEST_SRC,
-								PATH_ADDONS_NODE_API_TEST_SRC,
+								// XGK_TEST_SRC,
+								// PATH_ADDONS_NODE_API_TEST_SRC,
+								path.join(__dirname, '../../xgk-math/src'),
+								path.join(__dirname, '../../xgk-aux/src'),
+								path.join(__dirname, '../../xgk-api/src'),
+								path.join(__dirname, '../../xgk-opengl/src'),
+								path.join(__dirname, '../../xgk-test/src'),
+								path.join(__dirname, 'addons/test-cpp/src'),
 							],
 						)
 						.on
 						(
 							'change',
 
-							async (evt) =>
+							// async (evt) =>
+							async () =>
 							{
 								// if
 								// (

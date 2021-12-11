@@ -4,46 +4,37 @@
 
 
 
-// #include <iostream>
+#include <cstdint>
 #include <cstring>
 #include <thread>
-// #include <vector>
 
 #include "napi.h"
+
+#include "xgk-opengl/src/opengl.h"
+
+
+
+// // #include <iostream>
+// // using std::cout;
+// // using std::endl;
 
 
 
 using namespace Napi;
-// using std::cout;
-// using std::endl;
 
 
 
-void initOrbit (void);
-void initGL2 (const size_t&, const size_t&);
-void loop_function_GL2 (void);
-void rotateOrbit (const float&, const float&);
+extern void initOpengl (void);
 
 
 
-extern void* pixel_data;
-
-size_t rendering_loop_flag { 1 };
-
-size_t window_xy [2];
+extern XGK::OPENGL::RendererOffscreen* _renderer;
 
 
 
 void rendernig_thread (void)
 {
-	initGL2(window_xy[0], window_xy[1]);
-
-	rendering_loop_flag = 1;
-
-	for (; rendering_loop_flag;)
-	{
-		loop_function_GL2();
-	}
+	initOpengl();
 }
 
 std::thread* rendernig_thread_handle {};
@@ -55,24 +46,17 @@ Value testRenderingThread (const CallbackInfo& info)
 
 void runRenderingThread (const CallbackInfo& info)
 {
-	initOrbit();
-
-	window_xy[0] = info[0].As<Number>().Uint32Value();
-	window_xy[1] = info[1].As<Number>().Uint32Value();
-
 	rendernig_thread_handle = new std::thread { rendernig_thread };
 }
 
 void stopRenderingThread (const CallbackInfo& info)
 {
-	rendering_loop_flag = 0;
-
 	delete rendernig_thread_handle;
 }
 
 Value getPixelDataStorageIsAllocated (const CallbackInfo& info)
 {
-	return Boolean::New(info.Env(), pixel_data != nullptr);
+	return Boolean::New(info.Env(), _renderer->pixel_data != nullptr);
 }
 
 Value getPixelDataStorage (const CallbackInfo& info)
@@ -82,8 +66,8 @@ Value getPixelDataStorage (const CallbackInfo& info)
 		ArrayBuffer::New
 		(
 			info.Env(),
-			pixel_data,
-			800 * 600 * 4
+			_renderer->pixel_data,
+			_renderer->wrapper->width * _renderer->wrapper->height * 4
 		),
 	};
 
@@ -102,10 +86,10 @@ Value getPixelDataStorage (const CallbackInfo& info)
 	return uint8_clamped_array;
 }
 
-void rotateOrbitJs (const CallbackInfo& info)
-{
-	rotateOrbit(info[0].As<Number>(), info[1].As<Number>());
-}
+// void rotateOrbitJs (const CallbackInfo& info)
+// {
+// 	rotateOrbit(info[0].As<Number>(), info[1].As<Number>());
+// }
 
 Object Init (Env env, Object exports)
 {
@@ -117,7 +101,7 @@ Object Init (Env env, Object exports)
 	EXPORT_FUNCTION_VOID(stopRenderingThread);
 	EXPORT_FUNCTION(getPixelDataStorageIsAllocated);
 	EXPORT_FUNCTION(getPixelDataStorage);
-	EXPORT_FUNCTION_VOID(rotateOrbitJs);
+	// EXPORT_FUNCTION_VOID(rotateOrbitJs);
 
 	return exports;
 }
