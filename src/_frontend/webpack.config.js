@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
+// const CopyPlugin = require('copy-webpack-plugin');
 
 
 
@@ -14,9 +14,6 @@ module.exports = (env) =>
 		entry: './src/index.js',
 
 		target: 'web',
-
-		// Maybe prevent caching only for C++ modules?
-		cache: false,
 
 		resolve:
 		{
@@ -38,7 +35,7 @@ module.exports = (env) =>
 
 					use:
 
-						env.development ?
+						env === 'development' ?
 
 							[
 								{
@@ -56,7 +53,7 @@ module.exports = (env) =>
 				},
 
 				{
-					test: /\.scss$/,
+					test: /\.(css|scss)$/,
 
 					use:
 					[
@@ -90,20 +87,21 @@ module.exports = (env) =>
 
 				{
 					test: /\.cpp$/,
+
 					use:
 					{
 						loader: '../xgk-cpp-webpack-loader/src/index.js',
 
-						options:
-						{
-							asd: 123,
-						},
+						// options:
+						// {
+						// 	asd: 123,
+						// },
 					},
 				},
 			],
 		},
 
-		devtool: env.development ? 'source-map' : false,
+		devtool: env === 'development' ? 'source-map' : false,
 
 		plugins:
 		[
@@ -127,13 +125,16 @@ module.exports = (env) =>
 				},
 			),
 
-			// new CopyPlugin
-			// ({
-			// 	patterns:
-			// 	[
-			// 		{ from: 'src/public', to: 'build' },
-			// 	],
-			// }),
+			// new CopyPlugin(
+
+			// 	{
+			// 		patterns:
+			// 		[
+			// 			{ from: 'src/models', to: 'models' },
+			// 			{ from: 'src/textures', to: 'textures' },
+			// 		],
+			// 	},
+			// ),
 
 			new webpack.DefinePlugin
 			(
@@ -146,18 +147,8 @@ module.exports = (env) =>
 		devServer:
 		{
 			compress: true,
-			// hot: false,
-			// liveReload: false,
 			historyApiFallback: true,
 			host: 'localhost',
 			port: 8080,
-			// open: true,
-
-			// Enable using shared array buffers.
-			headers:
-			{
-				'Cross-Origin-Opener-Policy': 'same-origin',
-				'Cross-Origin-Embedder-Policy': 'require-corp',
-			},
 		},
 	});

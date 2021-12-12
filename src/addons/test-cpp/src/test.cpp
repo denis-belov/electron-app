@@ -1,5 +1,5 @@
-#define EXPORT_FUNCTION(function_name) exports[#function_name] = Function::New<Callback>(env, function_name);
-#define EXPORT_FUNCTION_VOID(function_name) exports[#function_name] = Function::New<VoidCallback>(env, function_name);
+#define EXPORT_FUNCTION(function_name) exports[#function_name] = Napi::Function::New<Callback>(env, function_name);
+#define EXPORT_FUNCTION_VOID(function_name) exports[#function_name] = Napi::Function::New<VoidCallback>(env, function_name);
 #define EXPORT_OBJECT(name) exports[#name] = name;
 
 
@@ -11,16 +11,6 @@
 #include "napi.h"
 
 #include "xgk-opengl/src/opengl.h"
-
-
-
-// // #include <iostream>
-// // using std::cout;
-// // using std::endl;
-
-
-
-using namespace Napi;
 
 
 
@@ -39,31 +29,41 @@ void rendernig_thread (void)
 
 std::thread* rendernig_thread_handle {};
 
-Value testRenderingThread (const CallbackInfo& info)
+Napi::Value testRenderingThread (const Napi::CallbackInfo& info)
 {
-	return Boolean::New(info.Env(), rendernig_thread_handle != nullptr);
+	return Napi::Boolean::New(info.Env(), rendernig_thread_handle != nullptr);
 }
 
-void runRenderingThread (const CallbackInfo& info)
+void runRenderingThread (const Napi::CallbackInfo& info)
 {
 	rendernig_thread_handle = new std::thread { rendernig_thread };
 }
 
-void stopRenderingThread (const CallbackInfo& info)
+void stopRenderingThread (const Napi::CallbackInfo& info)
 {
 	delete rendernig_thread_handle;
 }
 
-Value getPixelDataStorageIsAllocated (const CallbackInfo& info)
+Napi::Value getPixelDataStorageIsAllocated (const Napi::CallbackInfo& info)
 {
-	return Boolean::New(info.Env(), _renderer->pixel_data != nullptr);
+	return Napi::Boolean::New(info.Env(), _renderer->pixel_data != nullptr);
 }
 
-Value getPixelDataStorage (const CallbackInfo& info)
+Napi::Value getRendererSize (const Napi::CallbackInfo& info)
 {
-	ArrayBuffer arraybuffer
+	Napi::Object renderer_size { Napi::Object::New(info.Env()) };
+
+	renderer_size["renderer_width"] = Napi::Number::New(info.Env(), _renderer->wrapper->width);
+	renderer_size["renderer_height"] = Napi::Number::New(info.Env(), _renderer->wrapper->height);
+
+	return renderer_size;
+}
+
+Napi::Value getPixelDataStorage (const Napi::CallbackInfo& info)
+{
+	Napi::ArrayBuffer arraybuffer
 	{
-		ArrayBuffer::New
+		Napi::ArrayBuffer::New
 		(
 			info.Env(),
 			_renderer->pixel_data,
@@ -71,9 +71,9 @@ Value getPixelDataStorage (const CallbackInfo& info)
 		),
 	};
 
-	TypedArrayOf<uint8_t> uint8_clamped_array
+	Napi::TypedArrayOf<uint8_t> uint8_clamped_array
 	{
-		TypedArrayOf<uint8_t>::New
+		Napi::TypedArrayOf<uint8_t>::New
 		(
 			info.Env(),
 			arraybuffer.ByteLength(),
@@ -91,15 +91,16 @@ Value getPixelDataStorage (const CallbackInfo& info)
 // 	rotateOrbit(info[0].As<Number>(), info[1].As<Number>());
 // }
 
-Object Init (Env env, Object exports)
+Napi::Object Init (Napi::Env env, Napi::Object exports)
 {
-	using Callback = Value (*) (const CallbackInfo&);
-	using VoidCallback = void (*) (const CallbackInfo&);
+	using Callback = Napi::Value (*) (const Napi::CallbackInfo&);
+	using VoidCallback = void (*) (const Napi::CallbackInfo&);
 
 	EXPORT_FUNCTION(testRenderingThread);
 	EXPORT_FUNCTION_VOID(runRenderingThread);
 	EXPORT_FUNCTION_VOID(stopRenderingThread);
 	EXPORT_FUNCTION(getPixelDataStorageIsAllocated);
+	EXPORT_FUNCTION(getRendererSize);
 	EXPORT_FUNCTION(getPixelDataStorage);
 	// EXPORT_FUNCTION_VOID(rotateOrbitJs);
 
