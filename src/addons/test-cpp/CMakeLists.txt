@@ -19,7 +19,7 @@ target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} /home/denis/reps/denis-bel
 add_custom_target(xgk-math WORKING_DIRECTORY /home/denis/reps/denis-belov/xgk-math/src COMMAND cd /home/denis/reps/denis-belov/xgk-test && genmake gcc-x64)
 add_custom_target(xgk-aux WORKING_DIRECTORY /home/denis/reps/denis-belov/xgk-aux/src COMMAND cd /home/denis/reps/denis-belov/xgk-test && genmake gcc-x64)
 add_custom_target(xgk-api WORKING_DIRECTORY /home/denis/reps/denis-belov/xgk-api/src COMMAND cd /home/denis/reps/denis-belov/xgk-test && genmake gcc-x64)
-add_custom_target(xgk-opengl WORKING_DIRECTORY /home/denis/reps/denis-belov/xgk-opengl/src COMMAND cd /home/denis/reps/denis-belov/xgk-test && genmake gcc-x64)
+add_custom_target(xgk-renderers WORKING_DIRECTORY /home/denis/reps/denis-belov/xgk-renderers/src COMMAND cd /home/denis/reps/denis-belov/xgk-test && genmake gcc-x64)
 add_custom_target(xgk-test WORKING_DIRECTORY /home/denis/reps/denis-belov/xgk-test/src COMMAND cd /home/denis/reps/denis-belov/xgk-test && genmake gcc-x64)
 
 # add_custom_target(xgk-math WORKING_DIRECTORY /home/denis/reps/denis-belov/xgk-math/src COMMAND cd /home/denis/reps/denis-belov/xgk-math && genmake gcc-x64)
@@ -28,5 +28,5 @@ add_custom_target(xgk-test WORKING_DIRECTORY /home/denis/reps/denis-belov/xgk-te
 add_dependencies(${PROJECT_NAME} xgk-math)
 add_dependencies(${PROJECT_NAME} xgk-aux)
 add_dependencies(${PROJECT_NAME} xgk-api)
-add_dependencies(${PROJECT_NAME} xgk-opengl)
+add_dependencies(${PROJECT_NAME} xgk-renderers)
 add_dependencies(${PROJECT_NAME} xgk-test)

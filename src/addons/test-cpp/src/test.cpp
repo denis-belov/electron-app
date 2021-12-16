@@ -10,7 +10,7 @@
 
 #include "napi.h"
 
-#include "xgk-opengl/src/opengl.h"
+#include "xgk-renderers/src/opengl/opengl.h"
 
 
 

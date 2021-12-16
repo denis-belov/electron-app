@@ -15,6 +15,7 @@ module.exports = (env) =>
 
 		target: 'web',
 
+		// Warkaround for upating browser on C++ files changes.
 		// Maybe prevent caching only for C++ modules?
 		cache: false,
 
@@ -92,7 +93,7 @@ module.exports = (env) =>
 					test: /\.cpp$/,
 					use:
 					{
-						loader: '../xgk-cpp-webpack-loader/src/index.js',
+						loader: '../../../xgk-cpp-webpack-loader/src/index.js',
 
 						options:
 						{
@@ -127,13 +128,13 @@ module.exports = (env) =>
 				},
 			),
 
-			// new CopyPlugin
-			// ({
-			// 	patterns:
-			// 	[
-			// 		{ from: 'src/public', to: 'build' },
-			// 	],
-			// }),
+			new CopyPlugin
+			({
+				patterns:
+				[
+					{ from: 'src/public', to: 'public' },
+				],
+			}),
 
 			new webpack.DefinePlugin
 			(

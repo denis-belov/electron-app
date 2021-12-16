@@ -193,7 +193,7 @@ if (process.env.__ELECTRON_LOCAL__)
 								path.join(__dirname, '../../xgk-math/src'),
 								path.join(__dirname, '../../xgk-aux/src'),
 								path.join(__dirname, '../../xgk-api/src'),
-								path.join(__dirname, '../../xgk-opengl/src'),
+								path.join(__dirname, '../../xgk-renderers/src'),
 								path.join(__dirname, '../../xgk-test/src'),
 								path.join(__dirname, 'addons/test-cpp/src'),
 							],
