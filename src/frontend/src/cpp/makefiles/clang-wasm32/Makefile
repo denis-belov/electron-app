@@ -1,6 +1,6 @@
 ENV=clang-wasm32
-SRC=/home/denis/reps/denis-belov/web-app/src/cpp/src
-BUILD=/home/denis/reps/denis-belov/web-app/src/cpp/build/$(ENV)
+SRC=/home/denis/reps/denis-belov/electron-app/src/frontend/src/cpp/src
+BUILD=/home/denis/reps/denis-belov/electron-app/src/frontend/src/cpp/build/$(ENV)
 NO_LINK=-c
 VERBOSE:=-Wall -Wextra -Wabi -Wpedantic -v
 NO_STD=--no-standard-libraries
@@ -37,5 +37,5 @@ $(REPS)/denis-belov/xgk-math/build/$(ENV)/output/$(LIB_EXT)/xgk-math.$(LIB_EXT) 
 $(REPS)/denis-belov/xgk-api/build/$(ENV)/output/$(LIB_EXT)/xgk-api.$(LIB_EXT) : $(REPS)/denis-belov/xgk-api/src/descriptor-set/descriptor-set.cpp $(REPS)/denis-belov/xgk-api/src/descriptor-set/descriptor-set.h $(REPS)/denis-belov/xgk-api/src/material/material.cpp $(REPS)/denis-belov/xgk-api/src/material/material.h $(REPS)/denis-belov/xgk-api/src/object/object.cpp $(REPS)/denis-belov/xgk-api/src/object/object.h $(REPS)/denis-belov/xgk-api/src/renderer/renderer.cpp $(REPS)/denis-belov/xgk-api/src/renderer/renderer.h $(REPS)/denis-belov/xgk-api/src/scene/scene.cpp $(REPS)/denis-belov/xgk-api/src/scene/scene.h $(REPS)/denis-belov/xgk-api/src/uniform/uniform.cpp $(REPS)/denis-belov/xgk-api/src/uniform/uniform.h $(REPS)/denis-belov/xgk-api/src/uniform-block/uniform-block.cpp $(REPS)/denis-belov/xgk-api/src/uniform-block/uniform-block.h
 	genmake $(ENV) $(REPS)/denis-belov/xgk-api/genmake.json
 
-$(REPS)/denis-belov/xgk-aux/build/$(ENV)/output/$(LIB_EXT)/xgk-aux.$(LIB_EXT) : $(REPS)/denis-belov/xgk-aux/src/api/vulkan.h $(REPS)/denis-belov/xgk-aux/src/meas/meas.cpp $(REPS)/denis-belov/xgk-aux/src/meas/meas.h $(REPS)/denis-belov/xgk-aux/src/transition/transition.cpp $(REPS)/denis-belov/xgk-aux/src/transition/transition.h $(REPS)/denis-belov/xgk-aux/src/transition-stack/transition-stack.cpp $(REPS)/denis-belov/xgk-aux/src/transition-stack/transition-stack.h
+$(REPS)/denis-belov/xgk-aux/build/$(ENV)/output/$(LIB_EXT)/xgk-aux.$(LIB_EXT) : $(REPS)/denis-belov/xgk-aux/src/meas/meas.cpp $(REPS)/denis-belov/xgk-aux/src/meas/meas.h $(REPS)/denis-belov/xgk-aux/src/transition/transition.cpp $(REPS)/denis-belov/xgk-aux/src/transition/transition.h $(REPS)/denis-belov/xgk-aux/src/transition-stack/transition-stack.cpp $(REPS)/denis-belov/xgk-aux/src/transition-stack/transition-stack.h
 	genmake $(ENV) $(REPS)/denis-belov/xgk-aux/genmake.json

@@ -1,6 +1,6 @@
 import '@babel/polyfill';
 
-import WasmWrapper from '../../xgk-js/src/wasm-wrapper.js';
+import WasmWrapper from '../../../../xgk-js/src/wasm-wrapper.js';
 
 
 
