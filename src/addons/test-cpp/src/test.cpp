@@ -11,20 +11,34 @@
 #include "napi.h"
 
 #include "xgk-renderers/src/opengl/opengl.h"
+#include "xgk-renderers/src/vulkan/vulkan.h"
 
 
 
 extern void initOpengl (void);
+extern void initVulkan (void);
 
 
 
 extern XGK::OPENGL::RendererOffscreen* _renderer;
+extern XGK::VULKAN::RendererOffscreen* renderer_vulkan;
+
+
+
+const size_t API { 0 };
 
 
 
 void rendernig_thread (void)
 {
-	initOpengl();
+	if (API)
+	{
+		initOpengl();
+	}
+	else
+	{
+		initVulkan();
+	}
 }
 
 std::thread* rendernig_thread_handle {};
@@ -46,15 +60,22 @@ void stopRenderingThread (const Napi::CallbackInfo& info)
 
 Napi::Value getPixelDataStorageIsAllocated (const Napi::CallbackInfo& info)
 {
-	return Napi::Boolean::New(info.Env(), _renderer->pixel_data != nullptr);
+	if (API)
+	{
+		return Napi::Boolean::New(info.Env(), _renderer->pixel_data != nullptr);
+	}
+	else
+	{
+		return Napi::Boolean::New(info.Env(), renderer_vulkan->pixel_data != nullptr);
+	}
 }
 
 Napi::Value getRendererSize (const Napi::CallbackInfo& info)
 {
 	Napi::Object renderer_size { Napi::Object::New(info.Env()) };
 
-	renderer_size["renderer_width"] = Napi::Number::New(info.Env(), _renderer->wrapper->width);
-	renderer_size["renderer_height"] = Napi::Number::New(info.Env(), _renderer->wrapper->height);
+	renderer_size["renderer_width"] = Napi::Number::New(info.Env(), API ? _renderer->wrapper->width : renderer_vulkan->wrapper->width);
+	renderer_size["renderer_height"] = Napi::Number::New(info.Env(), API ? _renderer->wrapper->height : renderer_vulkan->wrapper->height);
 
 	return renderer_size;
 }
@@ -66,8 +87,8 @@ Napi::Value getPixelDataStorage (const Napi::CallbackInfo& info)
 		Napi::ArrayBuffer::New
 		(
 			info.Env(),
-			_renderer->pixel_data,
-			_renderer->wrapper->width * _renderer->wrapper->height * 4
+			API ? _renderer->pixel_data : renderer_vulkan->pixel_data,
+			API ? (_renderer->wrapper->width * _renderer->wrapper->height * 4) : (renderer_vulkan->wrapper->width * renderer_vulkan->wrapper->height * 4)
 		),
 	};
 
