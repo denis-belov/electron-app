@@ -9,7 +9,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_JS_INC} "${CMAKE_SOURCE_DIR}/node_modules/node-addon-api" "/home/denis/reps/denis-belov", "/home/denis/reps/denis-belov/xgk-renderers/src/glad/include")
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_JS_INC} "${CMAKE_SOURCE_DIR}/node_modules/node-addon-api" "/home/denis/reps/denis-belov", "/home/denis/reps/denis-belov/xgk-renderers/src/glad/include", "/home/denis/reps/denis-belov/xgk-renderers/src/glslang/include")
 
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} /home/denis/reps/denis-belov/xgk-test/build/gcc-x64/output/a/xgk-test.a)
 

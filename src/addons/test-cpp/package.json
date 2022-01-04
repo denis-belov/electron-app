@@ -4,6 +4,6 @@
     "cmake-js": "latest"
   },
   "scripts": {
-    "build": "node node_modules/cmake-js/bin/cmake-js"
+    "build": "node node_modules/cmake-js/bin/cmake-js -G 'Unix Makefiles'"
   }
 }
