@@ -6,10 +6,7 @@
 			"FLAGS_ADD": "-matomics -mbulk-memory",
 
 			"LIBS": "/home/denis/libs",
-			"REPS": "/home/denis/reps",
-
-			"MAKE_H": "mkdir -p $(BUILD)/h",
-			"MAKE_SPV": "mkdir -p $(BUILD)/spv"
+			"REPS": "/home/denis/reps"
 		},
 
 		"clang-wasm64":
@@ -17,10 +14,7 @@
 			"FLAGS_ADD": "-matomics -mbulk-memory",
 
 			"LIBS": "/home/denis/libs",
-			"REPS": "/home/denis/reps",
-
-			"MAKE_H": "mkdir -p $(BUILD)/h",
-			"MAKE_SPV": "mkdir -p $(BUILD)/spv"
+			"REPS": "/home/denis/reps"
 		}
 	},
 
@@ -32,7 +26,6 @@
 
 		"include_directories":
 		[
-			"$(BUILD)/h",
 			"$(REPS)/denis-belov"
 		],
 
@@ -45,31 +38,19 @@
 
 				"watch_files":
 				[
-					{
-						"file": "$(BUILD)/h/spirv_code_vertex.h",
+					"$(REPS)/denis-belov/xgk-math/src/mat4/mat4.h",
+					"$(REPS)/denis-belov/xgk-math/src/orbit/orbit.h",
+					"$(REPS)/denis-belov/xgk-math/src/util/util.h",
 
-						"watch_files": "$(REPS)/denis-belov/xgk-test/src/code.vert",
+					"$(REPS)/denis-belov/xgk-aux/src/transition-stack/transition-stack.h",
+					"$(REPS)/denis-belov/xgk-aux/src/transition/transition.h",
 
-						"do":
-						[
-							"$(MAKE_SPV) && $(MAKE_H) && ",
-							"glslangValidator $(REPS)/denis-belov/xgk-test/src/code.vert -V -t -o $(BUILD)/spv/vertex.spv && ",
-							"spv2uint32 $(BUILD)/spv/vertex.spv $(BUILD)/h/spirv_code_vertex.h spirv_code_vertex"
-						]
-					},
-
-					{
-						"file": "$(BUILD)/h/spirv_code_fragment.h",
-
-						"watch_files": "$(REPS)/denis-belov/xgk-test/src/code.frag",
-
-						"do":
-						[
-							"$(MAKE_SPV) && $(MAKE_H) && ",
-							"glslangValidator $(REPS)/denis-belov/xgk-test/src/code.frag -V -t -o $(BUILD)/spv/fragment.spv && ",
-							"spv2uint32 $(BUILD)/spv/fragment.spv $(BUILD)/h/spirv_code_fragment.h spirv_code_fragment"
-						]
-					}
+					"$(REPS)/denis-belov/xgk-api/src/uniform/uniform.h",
+					"$(REPS)/denis-belov/xgk-api/src/uniform-block/uniform-block.h",
+					"$(REPS)/denis-belov/xgk-api/src/descriptor-set/descriptor-set.h",
+					"$(REPS)/denis-belov/xgk-api/src/material/material.h",
+					"$(REPS)/denis-belov/xgk-api/src/object/object.h",
+					"$(REPS)/denis-belov/xgk-api/src/scene/scene.h"
 				]
 			},
 
