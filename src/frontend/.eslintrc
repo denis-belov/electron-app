@@ -8,7 +8,7 @@
 
 		"babelOptions":
 		{
-			"configFile": "./web-app/.babelrc"
+			"configFile": "./electron-app/src/frontend/.babelrc"
 		}
 	},
 

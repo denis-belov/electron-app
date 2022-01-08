@@ -302,7 +302,6 @@ window.addEventListener
 			const desc_set2 = DescriptorSet.getInstance(desc_set2_addr);
 			const _object = Object.getInstance(object_addr);
 			const object2 = Object.getInstance(object2_addr);
-			LOG(_object)
 
 
 
