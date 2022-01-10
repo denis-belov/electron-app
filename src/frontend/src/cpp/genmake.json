@@ -29,7 +29,7 @@
 			"$(REPS)/denis-belov"
 		],
 
-		"flags_additional": "$(STD_20) $(NO_LINK) $(VERBOSE) $(OPT_FASTX) $(SSE) $(FLAGS_ADD)",
+		"flags": "$(STD_20) $(NO_LINK) $(VERBOSE) $(OPT_FASTX) $(SSE) $(FLAGS_ADD)",
 
 		"watch_files":
 		[
